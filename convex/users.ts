@@ -88,7 +88,10 @@ export const getUser = query({
     }
 
     const users = await ctx.db.query("users").collect();
-    return users;
+    // removing our own account from add for coversation
+    return users.filter(
+      (user) => user.tokenIdentifier !== identity.tokenIdentifier
+    );
   },
 });
 
