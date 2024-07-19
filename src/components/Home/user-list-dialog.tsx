@@ -20,6 +20,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { mutation } from "../../../convex/_generated/server";
 import toast from "react-hot-toast";
+import { useConversationStore } from "@/store/chat-store";
 
 const UserListDialog = () => {
   const [selectedUsers, setSelectedUsers] = useState<Id<"users">[]>([]);
@@ -33,6 +34,8 @@ const UserListDialog = () => {
   const createConversation = useMutation(api.conversations.createConversation);
   const me = useQuery(api.users.getMe);
   const users = useQuery(api.users.getUser);
+
+  const { setSelectedConversation } = useConversationStore()
 
   const generateUploadUrl = useMutation(api.conversations.generateUploadUrl);
 
@@ -63,7 +66,7 @@ const UserListDialog = () => {
         });
 
         const { storageId } = await result.json();
-        await createConversation({
+        conversationId = await createConversation({
           participants: [...selectedUsers, me?._id!],
           isGroup: true,
           admin: me?._id!,
@@ -79,6 +82,16 @@ const UserListDialog = () => {
       setSelectedImage(null);
 
       // TODO ==>> update the global state called "selectedConversation"
+      const conversationName = isGroup ? groupName : users?.find((user) => user._id === selectedUsers[0])?.name;
+
+      setSelectedConversation({
+        _id: conversationId,
+        participants: selectedUsers,
+        isGroup,
+        image: isGroup ? renderedImage : users?.find((user) => user._id === selectedUsers[0])?.image,
+        name: conversationName,
+        admin: me?._id!,
+      });
     } catch (err) {
       // console.error(err);
       toast.error("failed to create conversation");
