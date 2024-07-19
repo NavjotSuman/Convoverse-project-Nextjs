@@ -5,20 +5,25 @@ import { MessageSeenSvg } from "@/lib/svgs";
 import { ImageIcon, Users, VideoIcon } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { useConversationStore } from "@/store/chat-store";
 
 const Conversation = ({ conversation }: { conversation: any }) => {
-  const conversationImage = conversation.groupImage || conversation.image
+  const conversationImage = conversation.groupImage || conversation.image;
   const conversationName = conversation.groupName || conversation.name;
   const lastMessage = conversation.lastMessage;
   const lastMessageType = lastMessage?.messageType;
-  const me = useQuery(api.users.getMe)
-  // will be added later during authentication
-  // const authUser = { _id: "user1" };
+  const me = useQuery(api.users.getMe);
+
+  const { setSelectedConversation, selectedConversation } =
+    useConversationStore();
+  // for select the conversation from the left panel
+  const activeBgClass = selectedConversation?._id === conversation._id;
 
   return (
     <>
       <div
-        className={`flex gap-2 items-center p-3 hover:bg-chat-hover cursor-pointer `}
+        className={`flex gap-2 items-center p-3 hover:bg-chat-hover cursor-pointer ${activeBgClass ? "bg-gray-tertiary" : ""}`}
+        onClick={() => setSelectedConversation(conversation)}
       >
         <Avatar className="border border-gray-900 overflow-visible relative">
           {conversation.isOnline && (
