@@ -10,6 +10,8 @@ import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useEffect } from "react";
 import { useConversationStore } from "@/store/chat-store";
+import { redirect } from "next/navigation";
+import LoginNow from "@/app/login/page"
 
 const LeftPanel = () => {
   // const conversations = [];
@@ -27,6 +29,8 @@ const LeftPanel = () => {
       setSelectedConversation(null);
     }
   }, [conversations, selectedConversation, setSelectedConversation]);
+
+
 
 
   if (isLoading) return null
